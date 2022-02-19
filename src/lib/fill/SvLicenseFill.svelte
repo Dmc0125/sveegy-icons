@@ -1,12 +1,25 @@
 <script lang="ts">
-export let color = 'currentColor'
-export let size = '100%'
+let color = 'currentColor'
+let size = '100%'
+let className = ''
+
+$: stylingProps = (
+  className.length
+  ? { class: className }
+  : { style: `color: ${color}; width: ${size}; height: ${size};` }
+)
+
+export {
+  className as class,
+  color,
+  size,
+}
 </script>
 
-<svg style="color: {color}; width: {size}; height: {size}" viewBox="0 0 24 24" fill="none">
+<svg {...stylingProps} viewBox="0 0 24 24" fill="none">
   <path
     fill-rule="evenodd"
     d="M5 5V19C5 19.5523 5.44772 20 6 20H18C18.5523 20 19 19.5523 19 19V5C19 4.44772 18.5523 4 18 4H6C5.44772 4 5 4.44772 5 5ZM8.5 7C8.22386 7 8 7.22386 8 7.5C8 7.77614 8.22386 8 8.5 8H13.5C13.7761 8 14 7.77614 14 7.5C14 7.22386 13.7761 7 13.5 7H8.5ZM8.5 10.5C8.22386 10.5 8 10.7239 8 11C8 11.2761 8.22386 11.5 8.5 11.5H14.5C14.7761 11.5 15 11.2761 15 11C15 10.7239 14.7761 10.5 14.5 10.5H8.5ZM8.5 12.5C8.22386 12.5 8 12.7239 8 13C8 13.2761 8.22386 13.5 8.5 13.5H10.5C10.7761 13.5 11 13.2761 11 13C11 12.7239 10.7761 12.5 10.5 12.5H8.5ZM8.5 16C8.22386 16 8 16.2239 8 16.5C8 16.7761 8.22386 17 8.5 17H14.5C14.7761 17 15 16.7761 15 16.5C15 16.2239 14.7761 16 14.5 16H8.5Z"
-    fill="{color}"
-  />  
+    fill="currentColor"
+  />
 </svg>

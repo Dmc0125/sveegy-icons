@@ -1,0 +1,4 @@
+{
+  "stroke": "<path\n    d=\"{#d}\"\n    stroke=\"currentColor\"\n    stroke-linecap=\"round\"\n    stroke-linejoin=\"round\"\n    stroke-width=\"{strokeWidth}\"\n  />",
+  "fill": "<path\n    fill-rule=\"evenodd\"\n    d=\"{#d}\"\n    fill=\"currentColor\"\n  />"
+}

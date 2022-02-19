@@ -1,11 +1,11 @@
 <script lang="ts">
-import { SvAddAssetsFill, SvAlignLeftOutline, SvArchiveStroke } from '$lib'
+import { SvAddAssetsFill, SvArchiveStroke, SvPencilStroke } from '$lib'
 </script>
 
 <main class="wrapper">
   <SvAddAssetsFill size="6rem" color="rgba(0, 0, 0, .2)" />
-  <SvAlignLeftOutline size="4rem" color="red" />
   <SvArchiveStroke size="90px" strokeWidth=".5px" color="blue" />
+  <SvPencilStroke class="pencil" />
 </main>
 
 <style>
@@ -25,5 +25,11 @@ import { SvAddAssetsFill, SvAlignLeftOutline, SvArchiveStroke } from '$lib'
 
 :global(.wrapper svg) {
   border: 1px solid rgb(199, 199, 199);
+}
+
+:global(.pencil) {
+  color: red;
+  width: 80px;
+  height: 80px;
 }
 </style>

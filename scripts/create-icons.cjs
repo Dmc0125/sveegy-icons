@@ -3,13 +3,19 @@ const fetch = require('node-fetch')
 const fs = require('fs/promises')
 const path = require('path')
 
-const templates = require('./templates.cjs')
+const pathTemplates = require('./templates/paths.json')
 
 const SRC_PATH = path.join(__dirname, '../src/lib')
 const EXPORT_ICON_TEMPLATE = 'export { default as {#name} } from \'./{#type}/{#name}.svelte\''
 
+const loadComponentTemplate = async () => {
+  const componentTemplatePath = path.join(__dirname, '/templates')
+  const componentTemplate = await fs.readFile(`${componentTemplatePath}/svg.svelte`, { encoding: 'utf-8' })
+  return componentTemplate
+}
+
 /**
- * @param {'outline' | 'stroke' | 'fill'} iconType
+ * @param {'stroke' | 'fill'} iconType
  * @returns {Promise<string>}
  */
 const fetchSveegy = async (iconType) => {
@@ -19,8 +25,8 @@ const fetchSveegy = async (iconType) => {
 }
 
 /**
- * @param {'outline' | 'stroke' | 'fill'} iconType
- * @returns {Promise<{ iconId: string; dAttrs: string, type: 'outline' | 'stroke' | 'fill' }[]>}
+ * @param {'stroke' | 'fill'} iconType
+ * @returns {Promise<{ iconId: string; dAttrs: string, type: 'stroke' | 'fill' }[]>}
  */
 const scrapeIcons = async (iconType) => {
   const sveegyHtml = await fetchSveegy(iconType)
@@ -64,40 +70,46 @@ const capitalize = (str) => {
 }
 
 /**
- * @param {{ iconId: string; dAttrs: string; type: 'outline' | 'stroke' | 'fill' }} icon
- * @param {string} _path
- * @returns {Promise<[string, string]>}
+ * @param {string[]} dAttrs
+ * @param {'stroke' | 'fill'} type
+ * @returns {string}
  */
-const createIconComponent = async (icon, _path) => {
-  const { iconId, dAttrs, type } = icon
-  const componentName = `Sv${capitalize(iconId)}${capitalize(type)}`
+const createPaths = (dAttrs, type) => {
+  const pathTemplate = pathTemplates[type]
+  const pathsData = dAttrs.map((dAttr) => pathTemplate.replace('{#d}', dAttr))
 
-  const templateId = type === 'stroke' ? 'stroke' : 'fill_outline'
-  const svgTemplate = templates[templateId]
-  const pathTemplate = templates[`${templateId}Path`]
-
-  const pathsData = dAttrs.reduce((acc, dAttr) => (`
-    ${acc}\n\t${pathTemplate.replace('{#d}', dAttr)}
-  `), '')
-
-  const svgData = svgTemplate.replace('{#path}', pathsData.trim())
-  await fs.writeFile(`${_path}/${type}/${componentName}.svelte`, svgData)
-
-  return [componentName, type]
+  return pathsData.join('\n  ')
 }
 
 /**
- * @param {Promise<{ iconId: string; dAttrs: string: type: 'outline' | 'stroke' | 'fill' }[]>} icons
+ * @param {string} component
+ * @param {string} componentName
+ * @param {'stroke' | 'fill'} iconType
  */
-const createIconsComponents = async (icons) => {
+const writeComponentFileAndCreateExport = async (component, componentName, iconType) => {
+  await fs.writeFile(`${SRC_PATH}/${iconType}/${componentName}.svelte`, component)
+
+  // eslint-disable-next-line prefer-regex-literals
+  const nameRegex = new RegExp('{#name}', 'g')
+  return EXPORT_ICON_TEMPLATE.replace(nameRegex, componentName).replace('{#type}', iconType)
+}
+
+/**
+ * @param {{ iconId: string; dAttrs: string: type: 'stroke' | 'fill' }[]} icons
+ * @param {string} componentTemplate
+ */
+const createIconsComponents = async (icons, componentTemplate) => {
   const _exports = []
 
   for (let i = 0; i < icons.length; i += 1) {
+    const { dAttrs, type, iconId } = icons[i]
+
+    const paths = createPaths(dAttrs, type)
+    const iconComponent = componentTemplate.replace('#path', paths)
+    const componentName = `Sv${capitalize(iconId)}${capitalize(type)}`
     // eslint-disable-next-line no-await-in-loop
-    const [componentName, type] = await createIconComponent(icons[i], SRC_PATH)
-    // eslint-disable-next-line prefer-regex-literals
-    const nameRegex = new RegExp('{#name}', 'g')
-    _exports.push(EXPORT_ICON_TEMPLATE.replace(nameRegex, componentName).replace('{#type}', type))
+    const _export = await writeComponentFileAndCreateExport(iconComponent, componentName, type)
+    _exports.push(_export)
   }
 
   return _exports
@@ -118,14 +130,14 @@ const createEntryFile = async (..._exports) => {
 }
 
 (async () => {
-  const outlineIcons = await scrapeIcons('outline')
-  const outlineExports = await createIconsComponents(outlineIcons)
+  const strokeComponentTemplate = await loadComponentTemplate()
+  const fillComponentTemplate = strokeComponentTemplate.replace('export let strokeWidth = \'1px\'\n', '')
 
   const fillIcons = await scrapeIcons('fill')
-  const fillExports = await createIconsComponents(fillIcons)
+  const fillExports = await createIconsComponents(fillIcons, fillComponentTemplate)
 
   const strokeIcons = await scrapeIcons('stroke')
-  const strokeExports = await createIconsComponents(strokeIcons)
+  const strokeExports = await createIconsComponents(strokeIcons, strokeComponentTemplate)
 
-  await createEntryFile(outlineExports, fillExports, strokeExports)
+  await createEntryFile(fillExports, strokeExports)
 })()

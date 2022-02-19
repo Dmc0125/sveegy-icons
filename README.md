@@ -1,5 +1,7 @@
 # Sveegy Icons
 
+- Official docs - https://sveegy.vercel.app/docs
+
 ## Usage
 
 ```sh
@@ -27,6 +29,8 @@ import { SvHeartOutline } from 'sveegy-icons'
 Icons and icon names are corresponding to icons on [Sveegy](https://sveegy.vercel.app/icons)
 
 ## Props
+
+- Every icon component has `class` props, if `class` is used `size` will not be used and value of `color` will be `currentColor`
 
 ### Fill / Outline
 

@@ -1,0 +1,33 @@
+{
+  "name": "@sveegy/icons-vue",
+  "description": "Svg icons library for Vue",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "vite",
+    "build:dev": "vue-tsc --noEmit && vite build",
+    "package": "node ../../scripts/build/package.js"
+  },
+  "devDependencies": {
+    "vue": "^3.2.25",
+    "@vitejs/plugin-vue": "^2.2.0",
+    "typescript": "^4.5.4",
+    "vite": "^2.8.0",
+    "vue-tsc": "^0.29.8"
+  },
+  "keywords": [
+    "svg",
+    "icons",
+    "ui",
+    "sveegy",
+    "svelte",
+    "vue"
+  ],
+  "author": "Dominik Michal",
+  "homepage": "https://sveegy.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sveegy/sveegy-icons.git"
+  },
+  "license": "MIT",
+  "sideEffects": false
+}

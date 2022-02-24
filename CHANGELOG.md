@@ -1,15 +1,13 @@
 # Changelog
 
-All notable changes to Sveegy will be documented in this file.
+All notable changes to this project Sveegy will be documented in this file.
 
-## [0.2.1] - 02-21-2022
+## @sveegy/icons-svelte [0.3.0] - 02-24-2022
 
-### Added
+- Renamed project from `sveegy-icons` to `@sveegy/icons-svelte`
+- `sveegy-icons` is now **deprecated**
 
-- Stroke icons: clipboard, image-3d, popup, profile-separated
-- Filled icons: clipboard, folder-alt, image-3d, image-alt, popup, profile-separated 
+## @sveegy/icons-vue [0.0.1] - 02-24-2022
 
-## [0.2.0] - 02-19-2022
-
-- Removed `outline` icons
-- Added `class` prop
+- Initialized project
+  - Added all icons from https://sveegy.vercel.app/icons

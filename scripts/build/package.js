@@ -12,6 +12,8 @@ const copyPackageFile = async () => {
     const newPackage = {
         name: _package.name,
         version: _package.version,
+        types: './index.d.ts',
+        main: './index.js',
         devDependencies: _package.devDependencies,
         keywords: _package.keywords,
         author: _package.author,

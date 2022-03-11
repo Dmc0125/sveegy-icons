@@ -13,6 +13,8 @@ A set of beautiful icons in multiple styles
 
 ## Development
 
+- Create `.env` file and set up the config variables the same way as in `.env.sample`
+
 - Run `npm run build:scripts` to transpile `.ts` script files if there have been any changes
 
 </br>

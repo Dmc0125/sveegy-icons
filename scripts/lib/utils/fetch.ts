@@ -1,46 +1,51 @@
-import fetch from 'node-fetch'
-import cheerio from 'cheerio'
+import { initializeApp, deleteApp } from 'firebase/app'
+import { getFirestore, getDocs, collection } from 'firebase/firestore'
+import dotenv from 'dotenv'
 
-export type IconType = 'fill' | 'stroke'
+dotenv.config()
 
-const fetchSveegy = async (iconType: IconType) => {
-  const res = await fetch(`https://sveegy.vercel.app/icons?icon-type=${iconType}`)
-  const html = await res.text()
-  return html
+const {
+  API_KEY,
+  AUTH_DOMAIN,
+  PROJECT_ID,
+  STORAGE_BUCKET,
+  MESSAGING_SENDER_ID,
+  APP_ID,
+} = process.env
+
+const app = initializeApp({
+  apiKey: API_KEY,
+  authDomain: AUTH_DOMAIN,
+  projectId: PROJECT_ID,
+  storageBucket: STORAGE_BUCKET,
+  messagingSenderId: MESSAGING_SENDER_ID,
+  appId: APP_ID,
+})
+
+export const disconnectFirestore = async () => {
+  await deleteApp(app)
 }
 
-export type Icon = {
-  iconId: string
-  dAttrs: string[]
-  type: IconType
+const db = getFirestore(app)
+
+type IconData = {
+  id: string
+  stroke: string[] | null
+  fill: string[] | null
 }
 
-const scrapeIcons = async (iconType: IconType) => {
-  const sveegyHtml = await fetchSveegy(iconType)
-  const $ = cheerio.load(sveegyHtml)
-
-  const iconNames = $('div.w-full.h-14.flex.items-center.justify-center.px-2')
-  const icons = iconNames.map((i, el) => {
-    const iconId = $(el).text()
-    const pathEl = $(el).prev().children('path')
-
-    const dAttrs = []
-
-    if (pathEl.length > 1) {
-      pathEl.each((j, _pathEl) => {
-        dAttrs.push($(_pathEl).attr()?.d)
-      })
-    } else {
-      dAttrs.push($(el).prev().children('path').attr()?.d)
-    }
-
-    return {
-      iconId,
-      dAttrs,
-      type: iconType,
-    }
-  }) as unknown as Icon[]
+const getIcons = async () => {
+  const iconsSnapshot = await getDocs(collection(db, 'icons'))
+  const icons: IconData[] = []
+  iconsSnapshot.forEach((icon) => {
+    const { stroke, fill } = icon.data() as Omit<IconData, 'id'>
+    icons.push({
+      id: icon.id,
+      stroke,
+      fill,
+    })
+  })
   return icons
 }
 
-export default scrapeIcons
+export default getIcons

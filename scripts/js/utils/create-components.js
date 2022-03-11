@@ -22,6 +22,9 @@ const prettifyVueTemplate = (pathString) => {
         ...lines.slice(1).map((line) => `  ${line}`),
     ].join('\n');
 };
+/**
+ * @description Create path html elements
+ */
 const createPaths = (dAttrs, type, pathTemplates, framework) => {
     const pathTemplate = pathTemplates[type];
     const pathsData = dAttrs.map((dAttr) => pathTemplate.replace('{#d}', dAttr));
@@ -45,6 +48,10 @@ const loadComponentTemplate = async (framework) => {
     return componentTemplate;
 };
 exports.loadComponentTemplate = loadComponentTemplate;
+/**
+ * @description Write icon component
+ * @returns Icon component export
+ */
 const writeComponentFileAndCreateExport = async ({ component, componentName, iconType, framework, srcPath, }) => {
     await promises_1.default.writeFile(`${srcPath}/${iconType}/${componentName}.${framework}`, component);
     // eslint-disable-next-line prefer-regex-literals
@@ -54,13 +61,17 @@ const writeComponentFileAndCreateExport = async ({ component, componentName, ico
         .replace('{#type}', iconType)
         .replace('{#framework}', framework);
 };
-const createIconsComponents = async ({ icons, componentTemplate, framework, srcPath, pathTemplates, }) => {
+/**
+ * @description Create and write icon components
+ * @returns Exports of all icon components
+ */
+const createIconsComponents = async ({ icons, componentTemplate, framework, srcPath, pathTemplates, type, }) => {
     const _exports = [];
     for (let i = 0; i < icons.length; i += 1) {
-        const { dAttrs, type, iconId } = icons[i];
+        const { dAttrs, iconId } = icons[i];
         const paths = createPaths(dAttrs, type, pathTemplates, framework);
         const iconComponent = componentTemplate.replace('#path', paths);
-        const componentName = `Sv${capitalize(iconId)}${capitalize(type)}`;
+        const componentName = `Sv${capitalize(iconId.replace(/-/g, ' '))}${capitalize(type)}`;
         // eslint-disable-next-line no-await-in-loop
         const _export = await writeComponentFileAndCreateExport({
             component: iconComponent,
@@ -74,6 +85,9 @@ const createIconsComponents = async ({ icons, componentTemplate, framework, srcP
     return _exports;
 };
 exports.createIconsComponents = createIconsComponents;
+/**
+ * @description Create index.ts file with exports of all the components
+ */
 const createEntryFile = async ({ _exports, srcPath }) => {
     let allExports = '';
     for (let i = 0; i < _exports.length; i += 1) {

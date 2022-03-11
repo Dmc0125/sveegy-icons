@@ -1,10 +1,15 @@
 import path from 'path'
 import fs from 'fs/promises'
 
-import { Icon, IconType } from './fetch'
-
 const EXPORT_ICON_TEMPLATE = 'export { default as {#name} } from \'./{#type}/{#name}.{#framework}\''
 const TEMPLATES_PATH = path.join(__dirname, '../../templates')
+
+export type IconType = 'fill' | 'stroke'
+
+export type Icon = {
+  iconId: string
+  dAttrs: string[]
+}
 
 const capitalize = (str: string) => {
   const idParts = str.split(' ')
@@ -29,6 +34,9 @@ const prettifyVueTemplate = (pathString: string) => {
   ].join('\n')
 }
 
+/**
+ * @description Create path html elements
+ */
 const createPaths = (dAttrs: string[], type: IconType, pathTemplates: SvgTemplates, framework: Framework) => {
   const pathTemplate = pathTemplates[type]
   const pathsData = dAttrs.map((dAttr) => pathTemplate.replace('{#d}', dAttr))
@@ -63,6 +71,10 @@ type WriteComponentFileAndCreateExportParams = {
   srcPath: string
 }
 
+/**
+ * @description Write icon component
+ * @returns Icon component export
+ */
 const writeComponentFileAndCreateExport = async ({
   component, componentName, iconType, framework, srcPath,
 }: WriteComponentFileAndCreateExportParams) => {
@@ -82,19 +94,24 @@ type CreateIconsComponentsParams = {
   framework: Framework
   srcPath: string
   pathTemplates: SvgTemplates
+  type: IconType
 }
 
+/**
+ * @description Create and write icon components
+ * @returns Exports of all icon components
+ */
 export const createIconsComponents = async ({
-  icons, componentTemplate, framework, srcPath, pathTemplates,
+  icons, componentTemplate, framework, srcPath, pathTemplates, type,
 }: CreateIconsComponentsParams) => {
   const _exports = []
 
   for (let i = 0; i < icons.length; i += 1) {
-    const { dAttrs, type, iconId } = icons[i]
+    const { dAttrs, iconId } = icons[i]
 
     const paths = createPaths(dAttrs, type, pathTemplates, framework)
     const iconComponent = componentTemplate.replace('#path', paths)
-    const componentName = `Sv${capitalize(iconId)}${capitalize(type)}`
+    const componentName = `Sv${capitalize(iconId.replace(/-/g, ' '))}${capitalize(type)}`
     // eslint-disable-next-line no-await-in-loop
     const _export = await writeComponentFileAndCreateExport({
       component: iconComponent,
@@ -114,6 +131,9 @@ type CreateEntryFileParams = {
   srcPath: string
 }
 
+/**
+ * @description Create index.ts file with exports of all the components
+ */
 export const createEntryFile = async ({ _exports, srcPath }: CreateEntryFileParams) => {
   let allExports = ''
 

@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build:dev": "vue-tsc --noEmit && vite build",
-    "package": "node ../../scripts/build/package.js"
+    "package": "node ../../scripts/js/package.js"
   },
   "devDependencies": {
     "vue": "^3.2.25",

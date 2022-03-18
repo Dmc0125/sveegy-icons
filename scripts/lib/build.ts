@@ -2,7 +2,6 @@ import path from 'path'
 
 import getIcons, { disconnectFirestore } from './utils/fetch'
 import {
-  createEntryFile,
   createIconsComponents,
   loadComponentTemplate,
   loadSvgTemplates,
@@ -31,7 +30,7 @@ const buildIcons = async (strokeIcons: Icon[], fillIcons: Icon[], { framework, s
   const removeFromStrokeTemplate = framework === 'vue' ? '  strokeWidth?: string\n' : 'export let strokeWidth = \'1px\'\n'
   const fillComponentTemplate = strokeComponentTemplate.replace(removeFromStrokeTemplate, '')
 
-  const strokeIconsExports = await createIconsComponents({
+  await createIconsComponents({
     type: 'stroke',
     icons: strokeIcons,
     componentTemplate: strokeComponentTemplate,
@@ -39,7 +38,7 @@ const buildIcons = async (strokeIcons: Icon[], fillIcons: Icon[], { framework, s
     srcPath,
     pathTemplates,
   })
-  const fillIconsExports = await createIconsComponents({
+  await createIconsComponents({
     type: 'fill',
     icons: fillIcons,
     componentTemplate: fillComponentTemplate,
@@ -47,8 +46,6 @@ const buildIcons = async (strokeIcons: Icon[], fillIcons: Icon[], { framework, s
     srcPath,
     pathTemplates,
   })
-
-  await createEntryFile({ _exports: [fillIconsExports, strokeIconsExports], srcPath })
 }
 
 (async () => {

@@ -32,7 +32,7 @@ const buildIcons = async (strokeIcons, fillIcons, { framework, srcPath, pathTemp
     // remove stroke-width prop to transform stroke template to fill template
     const removeFromStrokeTemplate = framework === 'vue' ? '  strokeWidth?: string\n' : 'export let strokeWidth = \'1px\'\n';
     const fillComponentTemplate = strokeComponentTemplate.replace(removeFromStrokeTemplate, '');
-    const strokeIconsExports = await (0, create_components_1.createIconsComponents)({
+    await (0, create_components_1.createIconsComponents)({
         type: 'stroke',
         icons: strokeIcons,
         componentTemplate: strokeComponentTemplate,
@@ -40,7 +40,7 @@ const buildIcons = async (strokeIcons, fillIcons, { framework, srcPath, pathTemp
         srcPath,
         pathTemplates,
     });
-    const fillIconsExports = await (0, create_components_1.createIconsComponents)({
+    await (0, create_components_1.createIconsComponents)({
         type: 'fill',
         icons: fillIcons,
         componentTemplate: fillComponentTemplate,
@@ -48,7 +48,6 @@ const buildIcons = async (strokeIcons, fillIcons, { framework, srcPath, pathTemp
         srcPath,
         pathTemplates,
     });
-    await (0, create_components_1.createEntryFile)({ _exports: [fillIconsExports, strokeIconsExports], srcPath });
 };
 (async () => {
     const env = process.argv[2];

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createEntryFile = exports.createIconsComponents = exports.loadComponentTemplate = exports.loadSvgTemplates = void 0;
+exports.createIconsComponents = exports.loadComponentTemplate = exports.loadSvgTemplates = void 0;
 const path_1 = __importDefault(require("path"));
 const promises_1 = __importDefault(require("fs/promises"));
 const EXPORT_ICON_TEMPLATE = 'export { default as {#name} } from \'./{#type}/{#name}.{#framework}\'';
@@ -66,34 +66,19 @@ const writeComponentFileAndCreateExport = async ({ component, componentName, ico
  * @returns Exports of all icon components
  */
 const createIconsComponents = async ({ icons, componentTemplate, framework, srcPath, pathTemplates, type, }) => {
-    const _exports = [];
     for (let i = 0; i < icons.length; i += 1) {
         const { dAttrs, iconId } = icons[i];
         const paths = createPaths(dAttrs, type, pathTemplates, framework);
         const iconComponent = componentTemplate.replace('#path', paths);
         const componentName = `Sv${capitalize(iconId.replace(/-/g, ' '))}${capitalize(type)}`;
         // eslint-disable-next-line no-await-in-loop
-        const _export = await writeComponentFileAndCreateExport({
+        await writeComponentFileAndCreateExport({
             component: iconComponent,
             componentName,
             iconType: type,
             framework,
             srcPath,
         });
-        _exports.push(_export);
     }
-    return _exports;
 };
 exports.createIconsComponents = createIconsComponents;
-/**
- * @description Create index.ts file with exports of all the components
- */
-const createEntryFile = async ({ _exports, srcPath }) => {
-    let allExports = '';
-    for (let i = 0; i < _exports.length; i += 1) {
-        const exportsJoined = _exports[i].join('\n');
-        allExports += `${exportsJoined}\n\n`;
-    }
-    await promises_1.default.writeFile(`${srcPath}/index.ts`, `${allExports.trim()}\n`);
-};
-exports.createEntryFile = createEntryFile;

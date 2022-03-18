@@ -104,8 +104,6 @@ type CreateIconsComponentsParams = {
 export const createIconsComponents = async ({
   icons, componentTemplate, framework, srcPath, pathTemplates, type,
 }: CreateIconsComponentsParams) => {
-  const _exports = []
-
   for (let i = 0; i < icons.length; i += 1) {
     const { dAttrs, iconId } = icons[i]
 
@@ -113,34 +111,12 @@ export const createIconsComponents = async ({
     const iconComponent = componentTemplate.replace('#path', paths)
     const componentName = `Sv${capitalize(iconId.replace(/-/g, ' '))}${capitalize(type)}`
     // eslint-disable-next-line no-await-in-loop
-    const _export = await writeComponentFileAndCreateExport({
+    await writeComponentFileAndCreateExport({
       component: iconComponent,
       componentName,
       iconType: type,
       framework,
       srcPath,
     })
-    _exports.push(_export)
   }
-
-  return _exports
-}
-
-type CreateEntryFileParams = {
-  _exports: string[][]
-  srcPath: string
-}
-
-/**
- * @description Create index.ts file with exports of all the components
- */
-export const createEntryFile = async ({ _exports, srcPath }: CreateEntryFileParams) => {
-  let allExports = ''
-
-  for (let i = 0; i < _exports.length; i += 1) {
-    const exportsJoined = _exports[i].join('\n')
-    allExports += `${exportsJoined}\n\n`
-  }
-
-  await fs.writeFile(`${srcPath}/index.ts`, `${allExports.trim()}\n`)
 }

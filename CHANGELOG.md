@@ -2,19 +2,28 @@
 
 All notable changes to this project Sveegy will be documented in this file.
 
-## @sveegy/icons-vue [0.1.0] - 03-18-2022
+## @sveegy/icons-svelte [0.5.0] - 03-21-2022
 
-- Added README to package
-- Changed exports
+- Reversed exports back
 ```js
-// not working
 import { ... } from '@sveegy/icons-svelte'
-
-// working
-import ... from '@sveegy/icons-svelte/SvAddAssetsFill.svelte'
 ```
 
-## @sveegy/icons-svelte [0.3.0] - 03-18-2022
+### Fixed
+
+- Component types
+- Previous version in changelog
+
+## @sveegy/icons-vue [0.1.1] - 03-21-2022
+
+- Added README to package
+- Added supports for CJS modules alongside EcmaScript modules
+
+### Fixed
+
+- Component types
+
+## @sveegy/icons-svelte [0.4.0] - 03-18-2022
 
 - Changed exports
 ```js

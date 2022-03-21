@@ -7,6 +7,9 @@ const config = {
 
   kit: {
     adapter: adapter(),
+    package: {
+      exports: (filepath) => !filepath.match(/\.svelte/),
+    },
   },
 }
 

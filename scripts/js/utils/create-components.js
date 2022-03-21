@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createIconsComponents = exports.loadComponentTemplate = exports.loadSvgTemplates = void 0;
+exports.createIconsComponents = exports.loadComponentTemplate = exports.loadSvgTemplates = exports.capitalize = void 0;
 const path_1 = __importDefault(require("path"));
 const promises_1 = __importDefault(require("fs/promises"));
 const EXPORT_ICON_TEMPLATE = 'export { default as {#name} } from \'./{#type}/{#name}.{#framework}\'';
@@ -15,6 +15,7 @@ const capitalize = (str) => {
     }
     return idParts.map((idPart) => `${idPart[0].toUpperCase()}${idPart.slice(1).toLowerCase()}`).join('');
 };
+exports.capitalize = capitalize;
 const prettifyVueTemplate = (pathString) => {
     const lines = pathString.split('\n');
     return [
@@ -66,19 +67,22 @@ const writeComponentFileAndCreateExport = async ({ component, componentName, ico
  * @returns Exports of all icon components
  */
 const createIconsComponents = async ({ icons, componentTemplate, framework, srcPath, pathTemplates, type, }) => {
+    const _exports = [];
     for (let i = 0; i < icons.length; i += 1) {
         const { dAttrs, iconId } = icons[i];
         const paths = createPaths(dAttrs, type, pathTemplates, framework);
         const iconComponent = componentTemplate.replace('#path', paths);
-        const componentName = `Sv${capitalize(iconId.replace(/-/g, ' '))}${capitalize(type)}`;
+        const componentName = `Sv${(0, exports.capitalize)(iconId.replace(/-/g, ' '))}${(0, exports.capitalize)(type)}`;
         // eslint-disable-next-line no-await-in-loop
-        await writeComponentFileAndCreateExport({
+        const _export = await writeComponentFileAndCreateExport({
             component: iconComponent,
             componentName,
             iconType: type,
             framework,
             srcPath,
         });
+        _exports.push(_export);
     }
+    return _exports;
 };
 exports.createIconsComponents = createIconsComponents;

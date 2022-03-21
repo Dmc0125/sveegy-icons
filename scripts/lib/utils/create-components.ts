@@ -11,7 +11,7 @@ export type Icon = {
   dAttrs: string[]
 }
 
-const capitalize = (str: string) => {
+export const capitalize = (str: string) => {
   const idParts = str.split(' ')
   if (idParts.length === 1) {
     return `${str[0].toUpperCase()}${str.slice(1).toLowerCase()}`
@@ -104,6 +104,8 @@ type CreateIconsComponentsParams = {
 export const createIconsComponents = async ({
   icons, componentTemplate, framework, srcPath, pathTemplates, type,
 }: CreateIconsComponentsParams) => {
+  const _exports: string[] = []
+
   for (let i = 0; i < icons.length; i += 1) {
     const { dAttrs, iconId } = icons[i]
 
@@ -111,12 +113,15 @@ export const createIconsComponents = async ({
     const iconComponent = componentTemplate.replace('#path', paths)
     const componentName = `Sv${capitalize(iconId.replace(/-/g, ' '))}${capitalize(type)}`
     // eslint-disable-next-line no-await-in-loop
-    await writeComponentFileAndCreateExport({
+    const _export = await writeComponentFileAndCreateExport({
       component: iconComponent,
       componentName,
       iconType: type,
       framework,
       srcPath,
     })
+    _exports.push(_export)
   }
+
+  return _exports
 }

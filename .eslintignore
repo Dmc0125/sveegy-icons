@@ -1,2 +1,5 @@
 *.d.ts
 scripts/**/*.js
+
+packages/vue/package/**/*.js
+packages/svelte/package/**/*.js

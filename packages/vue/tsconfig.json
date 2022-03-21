@@ -9,8 +9,10 @@
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "lib": ["esnext", "dom"]
+    "lib": ["esnext", "dom"],
+    "outDir": "package",
+    "rootDir": "src/lib"
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "include": ["src/lib/**/*.ts", "src/lib/**/*.d.ts", "src/lib/**/*.tsx", "src/lib/**/*.vue"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
